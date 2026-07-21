@@ -1,0 +1,13 @@
+packages:
+  "framer-motion": "Animations for playbook generation and card interactions"
+  "react-hook-form": "Form state management"
+  "@hookform/resolvers": "Zod validation for the strategy generation form"
+
+images:
+  - path: "artifacts/client-strategy/public/images/hero-bg.png"
+    description: "Subtle abstract geometric background in deep blue and gold with a premium corporate consulting aesthetic, very soft and minimalist"
+    aspect_ratio: "16:9"
+
+notes:
+  - "App uses window.print() for PDF generation with @media print styles"
+  - "Stateless application - playbook is stored in local React state after generation"

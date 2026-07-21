@@ -1,0 +1,51 @@
+Parte 2 — Prompt para colar no Agent do app novo (clientesbcg-foco)
+Copia e cola exatamente isto na conversa com o Agent do outro Replit:
+
+Integração com FOCO360 (portal do Instituto Foco)
+
+Esse app vai ser aberto a partir do portal FOCO360 como uma "ferramenta" da jornada do aluno. Preciso que você faça três coisas:
+
+1) Receber o aluno via SSO token na URL
+Quando o aluno clica na ferramenta no portal, o FOCO360 abre este app com ?sso_token=XXXX na URL (e às vezes outros parâmetros como client_id, step_id, product_id).
+
+No carregamento da página, leia sso_token da query string.
+Guarde em sessionStorage (chave foco_sso_token) para usar depois ao enviar o resultado.
+Se já existe um login próprio no app, mantenha — o sso_token é só o "carimbo" do FOCO360 para devolver o resultado depois. Não precisa validar o token contra o FOCO360, ele só serve para ser devolvido.
+Se não vier sso_token na URL, o app continua funcionando normalmente (modo standalone).
+2) Disparar o webhook quando o aluno concluir
+Quando o aluno finalizar o uso da ferramenta (gerou o resultado/relatório), faça um POST para:
+
+POST https://<DOMÍNIO_DO_FOCO360>/api/webhook/step-tool-result
+Headers:
+  Content-Type: application/json
+  x-api-key: <API_KEY_DO_PRODUTO>     // ou a API_KEY mestre
+Body (JSON):
+{
+  "sso_token": "<o token salvo no sessionStorage>",   // identifica o aluno
+  "stepId": "<STEP_ID_DA_ETAPA_NO_FOCO360>",          // fixo por ferramenta
+  "report": "Texto resumo do resultado (opcional)",
+  "strategies": ["item 1", "item 2"],                  // opcional, array
+  "resultUrl": "https://clientesbcg-foco.replit.app/resultado/abc123",  // link direto pro resultado do aluno
+  "extraData": { "qualquer": "campo extra" },          // opcional
+  "completed_at": "2026-05-13T14:30:00.000Z"           // opcional, ISO
+}
+
+Regras importantes:
+
+sso_token + stepId são suficientes para identificar o aluno e a etapa. Não precisa enviar email nem clientId.
+Pelo menos um destes deve vir preenchido: report, strategies, resultUrl ou extraData. Recomendo sempre enviar resultUrl porque é o link que o admin do FOCO360 e o próprio aluno vão clicar para ver o resultado salvo.
+A resultUrl precisa ser uma URL pública/acessível por quem tem o link (idealmente um link estável que abra o resultado daquele aluno especificamente).
+O webhook é idempotente: pode ser chamado de novo com o mesmo sso_token + stepId que ele só atualiza o registro existente.
+3) Variáveis de ambiente necessárias
+Adicione no Secrets:
+
+FOCO360_BASE_URL = URL do FOCO360 (ex: https://focoapp.replit.app)
+FOCO360_API_KEY = API key do produto (ou a chave mestra que vou te passar)
+FOCO360_STEP_ID = ID da etapa criada no FOCO360 (uma por ferramenta)
+Use essas envs no fetch para o webhook. Não me peça pra colocar valores hard-coded.
+
+4) Tratar erros sem quebrar o app
+Se o webhook falhar (rede, 401, 5xx), faça 2 retentativas com backoff curto e logue no console.
+Não bloqueie a UI do aluno se o webhook falhar — ele já viu o resultado dele. O webhook é só pra notificar o FOCO360.
+Implementa isso e me mostra o trecho de código onde você lê o sso_token e onde você dispara o webhook.
+

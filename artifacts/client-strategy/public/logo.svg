@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none">
+  <rect width="200" height="48" rx="8" fill="#09090b"/>
+  <rect x="8" y="8" width="32" height="32" rx="6" fill="#d4a636"/>
+  <text x="24" y="30" font-family="serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#09090b">B</text>
+  <text x="54" y="32" font-family="DM Sans, sans-serif" font-size="16" font-weight="600" fill="#fafafa">Estratégia</text>
+  <text x="54" y="44" font-family="DM Sans, sans-serif" font-size="10" font-weight="400" fill="#d4a636" letter-spacing="2">BCG MATRIX</text>
+</svg>

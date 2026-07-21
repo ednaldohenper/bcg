@@ -1,0 +1,167 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: strategy
+    description: Customer strategy generation
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /strategy/generate:
+    post:
+      operationId: generateStrategy
+      tags: [strategy]
+      summary: Generate customer strategy playbook
+      description: Generates a BCG-matrix-style customer strategy playbook based on business context
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateStrategyRequest"
+      responses:
+        "200":
+          description: Generated strategy playbook
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StrategyPlaybook"
+  /strategy/improve:
+    post:
+      operationId: improveText
+      tags: [strategy]
+      summary: Improve a text block with AI
+      description: Takes a text block and returns an improved version
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImproveTextRequest"
+      responses:
+        "200":
+          description: Improved text
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImproveTextResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    GenerateStrategyRequest:
+      type: object
+      properties:
+        industry:
+          type: string
+          description: Business industry/area
+        targetAudience:
+          type: string
+          description: Target audience description
+        mainProduct:
+          type: string
+          description: Main product or service
+        macContext:
+          type: string
+          description: Optional user-provided context describing preferred conversation starters (MACs)
+      required:
+        - industry
+        - targetAudience
+        - mainProduct
+    StrategyBlock:
+      type: object
+      properties:
+        icon:
+          type: string
+        title:
+          type: string
+        whoAreThey:
+          type: string
+        centralStrategy:
+          type: string
+        tacticalPlan:
+          type: array
+          items:
+            type: string
+        macs:
+          type: array
+          items:
+            type: string
+        communicationTemplate:
+          type: string
+      required:
+        - icon
+        - title
+        - whoAreThey
+        - centralStrategy
+        - tacticalPlan
+        - macs
+        - communicationTemplate
+    StrategyPlaybook:
+      type: object
+      properties:
+        star:
+          $ref: "#/components/schemas/StrategyBlock"
+        cashCow:
+          $ref: "#/components/schemas/StrategyBlock"
+        questionMark:
+          $ref: "#/components/schemas/StrategyBlock"
+        pineapple:
+          $ref: "#/components/schemas/StrategyBlock"
+      required:
+        - star
+        - cashCow
+        - questionMark
+        - pineapple
+    ImproveTextRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          description: The text to improve
+        context:
+          type: string
+          description: Context about the business for better improvement
+        blockType:
+          type: string
+          description: Which block this text belongs to (star, cashCow, questionMark, pineapple)
+        fieldType:
+          type: string
+          description: Which field type (whoAreThey, centralStrategy, tacticalPlan, macs, communicationTemplate)
+      required:
+        - text
+        - context
+        - blockType
+        - fieldType
+    ImproveTextResponse:
+      type: object
+      properties:
+        improvedText:
+          type: string
+          description: The improved text
+      required:
+        - improvedText
